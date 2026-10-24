@@ -1,0 +1,13 @@
+name: Defense C1 - SHA Pinning
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Pinned to the exact immutable commit SHA for actions/checkout v4.2.2
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 
+
+      - name: Test Protected Action
+        run: echo "Action loaded securely via immutable commit SHA."
