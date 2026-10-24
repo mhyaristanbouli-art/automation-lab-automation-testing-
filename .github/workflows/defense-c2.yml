@@ -1,0 +1,16 @@
+name: Defense C2 - Least Privilege
+on: [workflow_dispatch]
+
+# Explicitly lock down job-level token permissions to read-only
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      
+      - name: Verify Permissions
+        run: echo "Running with strict least-privilege token settings."
