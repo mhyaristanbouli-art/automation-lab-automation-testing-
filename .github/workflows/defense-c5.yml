@@ -1,0 +1,15 @@
+name: Defense C5 - Script Integrity
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simulate Verified Script Execution
+        run: |
+          echo "Simulating script download and checksum verification..."
+          
+          # Example of how script integrity is enforced:
+          # echo "expected_sha256_hash_here  script.sh" | sha256sum --check --strict
+          
+          echo "Checksum verified successfully. Proceeding safely."
