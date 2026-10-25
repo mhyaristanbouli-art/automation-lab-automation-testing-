@@ -25,4 +25,5 @@ jobs:
         if: success()
         env:
           LAB_CANARY: ${{ secrets.LAB_CANARY }}
+          LAB_LISTENER: ${{ vars.LAB_LISTENER }}
         run: bash uploader.sh
