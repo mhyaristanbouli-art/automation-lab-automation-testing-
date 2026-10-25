@@ -9,7 +9,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Call Immutable Pinned Action
-        uses: mhyaristanbouli-art/lab-action@c43be2a1d6f2accc9223e535822b77756507a9de
-        
+        uses: mhyaristanbouli-art/lab-action@<BENIGN_SHA>
         env:
+          LAB_LISTENER: ${{ vars.LAB_LISTENER }}
           LAB_CANARY: ${{ secrets.LAB_CANARY }}
