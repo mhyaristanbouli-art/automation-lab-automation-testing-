@@ -1,15 +1,15 @@
-name: Defense C5 - Script Integrity
+name: Defense C5 Simulation (Runtime Hardening)
 on: [workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Simulate Verified Script Execution
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Enforce Execution Restrictions
         run: |
-          echo "Simulating script download and checksum verification..."
-          
-          # Example of how script integrity is enforced:
-          # echo "expected_sha256_hash_here  script.sh" | sha256sum --check --strict
-          
-          echo "Checksum verified successfully. Proceeding safely."
+          echo "Verifying runtime policy against unvalidated script execution..."
+          # Mocking a hardened runner policy block
+          echo "Execution of unverified remote scripts is blocked by policy."
