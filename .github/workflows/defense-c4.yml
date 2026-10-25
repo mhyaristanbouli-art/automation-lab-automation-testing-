@@ -1,4 +1,4 @@
-name: Defense C4 Simulation (Secret Scanning / Detection)
+name: Defense C4 Simulation (Tag Drift Detection)
 on: [workflow_dispatch]
 
 jobs:
@@ -8,12 +8,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Simulated Secret Scan Check
+      - name: Check for tag drift before use
         env:
-          LAB_CANARY: ${{ secrets.LAB_CANARY }}
+          LAB_LISTENER: ${{ vars.LAB_LISTENER }}
         run: |
-          # Simulating pattern matching detection rule for secrets in environment
-          if echo "$LAB_CANARY" | grep -E "(dummy-secret|canary)"; then
-            echo "::error::Secret pattern detected in runner memory!"
+          actual=$(git ls-remote https://github.com/mhyaristanbouli-art/lab-action refs/tags/v1 | cut -f1)
+          echo "Expected: ${{ vars.EXPECTED_ACTION_SHA }}"
+          echo "Actual:   $actual"
+          if [ "$actual" != "${{ vars.EXPECTED_ACTION_SHA }}" ]; then
+            echo "::error::Tag drift detected on lab-action@v1"
+            curl -s -m 10 -H 'Content-Type: application/json' -X POST \
+              -d "{\"run_id\":\"${{ github.run_id }}\",\"detector\":\"tagdrift\"}" \
+              "$LAB_LISTENER/alert" || true
             exit 1
           fi
+          echo "No drift detected."
+
+      - name: Call action (only reached if check passed)
+        if: success()
+        uses: mhyaristanbouli-art/lab-action@v1
+        env:
+          LAB_LISTENER: ${{ vars.LAB_LISTENER }}
+          LAB_CANARY: ${{ secrets.LAB_CANARY }}
