@@ -9,6 +9,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Call Immutable Pinned Action
-        uses: mhyaristanbouli-art/lab-action@<COMMIT_SHA_A>
+        uses: mhyaristanbouli-art/lab-action@8382891d6260a83c746b746ea566e2ab9d59aa50
         env:
           LAB_CANARY: ${{ secrets.LAB_CANARY }}
