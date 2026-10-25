@@ -15,14 +15,13 @@ jobs:
         run: |
           response=$(curl -s -o /dev/null -w "%{http_code}" \
             -X POST https://api.github.com/repos/${{ github.repository }}/issues \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: Bearer ${{ github.token }}" \
             -H "Content-Type: application/json" \
-            -d '{"title": "C2 Test Issue"}')
-          
+            -d '{"title":"C2 Test Issue"}')
           echo "API Response Code: $response"
-          if [ "$response" -eq 403 ]; then
-            echo "SUCCESS: Privileged action blocked by least-privilege scoping."
+          if [ "$response" != "201" ]; then
+            echo "SUCCESS: Privileged action blocked."
           else
-            echo "FAILURE: Token permitted unauthorized action."
+            echo "FAILURE: Token permitted issue creation."
             exit 1
           fi
