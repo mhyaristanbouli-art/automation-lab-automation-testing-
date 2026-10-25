@@ -1,18 +1,19 @@
-name: Defense C4 - Monitoring & Auditing
-on:
-  workflow_dispatch:
+name: Defense C4 Simulation (Secret Scanning / Detection)
+on: [workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Run Pipeline Audit Check
+
+      - name: Simulated Secret Scan Check
+        env:
+          LAB_CANARY: ${{ secrets.LAB_CANARY }}
         run: |
-          echo "Auditing workflow integrity and monitoring actions..."
-          echo "No unauthorized telemetry or exfiltration detected."
+          # Simulating pattern matching detection rule for secrets in environment
+          if echo "$LAB_CANARY" | grep -E "(dummy-secret|canary)"; then
+            echo "::error::Secret pattern detected in runner memory!"
+            exit 1
+          fi
