@@ -1,7 +1,6 @@
-name: Defense C2 - Least Privilege
+name: Defense C2 Simulation (Token Scoping)
 on: [workflow_dispatch]
 
-# Explicitly lock down job-level token permissions to read-only
 permissions:
   contents: read
 
@@ -10,7 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      
-      - name: Verify Permissions
-        run: echo "Running with strict least-privilege token settings."
+        uses: actions/checkout@v4
+
+      - name: Attempt Privileged API Action
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST https://api.github.com/repos/${{ github.repository }}/issues \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"title": "C2 Test Issue"}')
+          
+          echo "API Response Code: $response"
+          if [ "$response" -eq 403 ]; then
+            echo "SUCCESS: Privileged action blocked by least-privilege scoping."
+          else
+            echo "FAILURE: Token permitted unauthorized action."
+            exit 1
+          fi
