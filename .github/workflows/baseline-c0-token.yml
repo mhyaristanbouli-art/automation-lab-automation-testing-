@@ -16,3 +16,9 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{"title":"C0 Baseline Test Issue"}')
           echo "API Response Code: $response"
+          if [ "$response" == "201" ]; then
+            echo "Baseline: privileged action succeeded as expected."
+          else
+            echo "::warning::Baseline call did not return 201 (got $response) — check Issues are enabled on this repo."
+            exit 1
+          fi
