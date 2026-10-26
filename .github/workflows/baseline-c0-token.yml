@@ -1,6 +1,9 @@
 name: Baseline C0 (Default Token Permissions)
 on: [workflow_dispatch]
 
+permissions:
+  issues: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
